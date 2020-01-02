@@ -3,6 +3,13 @@ CXX = g++
 
 CXXFLAGS=-O2 
 
+LIBS = -lOpenCL -lm
+
+ifdef HARP
+	AOCL_COMPILE_CONFIG=$(shell aocl compile-config)
+	LIBS+=
+endif
+
 ifdef FPGA
 	CXXFLAGS+=-DFPGA=1
 endif
@@ -11,7 +18,6 @@ ifdef MWI
 	CXXFLAGS+=-DMWI=1
 endif
 
-LIBS = -lOpenCL -lm
 
 BIN = conv_cl
 
