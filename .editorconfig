@@ -1,0 +1,15 @@
+# Taken from the following blogpost:
+# https://taylorhakes.com/posts/Github-Tab-Formatting/
+
+# EditorConfig is awesome: http://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+# Matches all files. Make tabs look like 2 spaces
+[*]
+end_of_line = lf
+insert_final_newline = true
+indent_style = tab
+indent_size = 2
+charset = utf-8
+

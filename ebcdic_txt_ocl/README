@@ -1,0 +1,22 @@
+DIBS Application: ebcdic->txt
+
+
+Build Instructions:
+
+Navigate to the src directory and run command:
+make
+
+
+Execution Instructions:
+
+The name of the application binary is:
+conv
+
+This code takes the following inputs from the command line:
+    -i input file
+    -o output file
+    -a (optional) convert from txt to ebcdic (defaults ebcdic to txt)
+    -n (optional) specify number of runs (defaults to 1)
+
+To execute the binary, run the command in the form::
+./conv [-i inputfile] [-o outputfile] [-a] [-n]
