@@ -20,8 +20,10 @@
 #include "e2a.h"
 #include "conv_routines.h"
 
-#include <CL/cl.h>
+#ifdef FPGA
 #include "AOCLUtils/opencl.h"
+#endif
+#include <CL/opencl.h>
 
 void dump_error(const char *str, cl_int status);
 char *getKernelSource(const char *filename);
@@ -227,7 +229,7 @@ int main(int argc, char* argv[])
 
 	// set the arguments
 #ifdef FPGA
-	status = clSetKernelArgSVMPointerAltera(kernel, 0, (void*) source);
+	status = clSetKernelArgSVMPointerAltera(ocl_info.kernel, 0, (void*) source);
 #else
 	status = clSetKernelArgSVMPointer(ocl_info.kernel, 0, (void*) source);
 #endif

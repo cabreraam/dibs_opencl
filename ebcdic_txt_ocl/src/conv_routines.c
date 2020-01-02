@@ -13,6 +13,10 @@
 #include <string.h>
 #include "ocl_template.h"
 
+#ifdef FPGA
+	#include "AOCLUtils/aocl_utils.h"
+#endif
+
 void usage(char *prog_name)
 {
 	printf("USAGE:\n\t %s [-i inputfile] [-o outputfile] [-a] [-n]\n", prog_name);
@@ -133,9 +137,15 @@ int readCharFile_ocl(FILE* ifp, unsigned long int buf_size, unsigned char** sour
 	unsigned char* temp_src = (unsigned char*) malloc(sizeof(unsigned char) * (buf_size + 1)); 
 	printf("reg malloc ok\n");
 
+#ifdef FPGA
+	*source = (unsigned char*) clSVMAllocAltera(
+		ocl_info->context, CL_MEM_READ_WRITE, sizeof(unsigned char) * (buf_size + 1), 64 
+	);
+#else
 	*source = (unsigned char*) clSVMAlloc(
 		ocl_info->context, CL_MEM_READ_WRITE, sizeof(unsigned char) * (buf_size + 1), 64 
 	);
+#endif
 	if (*source == NULL)
 	{
 		printf("error in clSVMAlloc\n");

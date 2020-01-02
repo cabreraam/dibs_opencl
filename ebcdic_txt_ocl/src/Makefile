@@ -3,11 +3,18 @@ CXX = g++
 
 CXXFLAGS=-O2 
 
-LIBS = -lOpenCL -lm
+INC = -I./include  
+
+LIBS = -lm
 
 ifdef HARP
 	AOCL_COMPILE_CONFIG=$(shell aocl compile-config)
-	LIBS+=
+	INC += $(AOCL_COMPILE_CONFIG)
+	AOCL_LINK_CONFIG=$(shell aocl link-config)
+	LIBS += $(AOCL_LINK_CONFIG)
+	#LIBS+= -lOpenCL
+else
+	LIBS += -lOpenCL
 endif
 
 ifdef FPGA
@@ -27,7 +34,7 @@ SRC = conv.cpp a2e.c e2a.c conv_routines.c
 
 
 $(BIN): $(SRC) ../../common_harp/src/AOCLUtils/opencl.cpp
-	$(CXX) $^ $(CXXFLAGS) -I./include -I$(AOCL_UTILS_DIR)/inc/ -o $@ $(LIBS) -Wall
+	$(CXX) $^ $(CXXFLAGS) $(INC) -I$(AOCL_UTILS_DIR)/inc/ -o $@ $(LIBS) -Wall
 
 clean:
 	rm -f $(BIN) *.o
