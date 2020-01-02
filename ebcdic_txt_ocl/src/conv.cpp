@@ -34,15 +34,10 @@ int main(int argc, char* argv[])
 	/* file io variables */
 	FILE *ifp = NULL, *ofp = NULL;
 	char of_name[128] = "../output/";
-	size_t of_name_len = 0;
-	char run[8];
 
 	/* original variables */
 	unsigned char *source = 0;
-	int j;
 	int ch;
-	int a2e = 0;
-	int d = 1;
 	unsigned long int buf_size;	//size of input file in bytes
 	size_t newLen; 							//number of bytes read into source
 
@@ -76,14 +71,6 @@ int main(int argc, char* argv[])
 
 				case 'o':
 					strcat(of_name, optarg);
-					break;
-
-				case 'a': /* 1 -> a2e, 0 -> e2a */
-					a2e = 1;
-					break;
-
-				case 'n':
-					d = atoi(optarg);
 					break;
 
 				default:
@@ -205,7 +192,6 @@ int main(int argc, char* argv[])
 
 	printf("\n");
 	strcat(of_name, "000.txt");
-	of_name_len = strlen(of_name);
 
 	//create host buffer through readCharFile_ocl
 	// figure out how big the file is and read it into a buffer 
@@ -346,7 +332,11 @@ void freeResources(opencl_info* ocl_info, unsigned char* source) {
   if(handle.cmd_queue) 
     clReleaseCommandQueue(handle.cmd_queue);
   if(source) 
+#ifdef FPGA
+   clSVMFreeAltera(handle.context,source);
+#else
    clSVMFree(handle.context,source);
+#endif
    //clSVMFreeAltera(handle.context,source);
   if(handle.context) 
     clReleaseContext(handle.context);
