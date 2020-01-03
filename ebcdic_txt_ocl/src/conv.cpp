@@ -19,6 +19,7 @@
 #include "a2e.h"
 #include "e2a.h"
 #include "conv_routines.h"
+#include "timer.h"
 
 #ifdef FPGA
 #include "AOCLUtils/opencl.h"
@@ -46,6 +47,13 @@ int main(int argc, char* argv[])
 	cl_int status;	
 	cl_uint num_platforms;
 	cl_uint num_devices;
+
+	/* timing stuff */
+	//TimeStamp input_start, input_end;
+	//TimeStamp output_start, output_end;
+	TimeStamp compute_start, compute_end;
+	//double input_time, output_time, compute_time;
+	double compute_time;
 
 	/* Usage */
 	if (argc <= 4 || argc >= 9)
@@ -83,7 +91,7 @@ int main(int argc, char* argv[])
 
 	/* initialize opencl stuff */
 	// get the platform ID
-	status = clGetPlatformIDs(0, NULL, &num_platforms);
+	status = clGetPlatformIDs(0, NULL, &num_platforms); 
 	ocl_info.platform_id = (cl_platform_id*) malloc(sizeof(cl_platform_id) * num_platforms);
 	status = clGetPlatformIDs(num_platforms, ocl_info.platform_id, &num_platforms);
 	if (status != CL_SUCCESS)
@@ -93,29 +101,26 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-  /*if(num_platforms != 1) {
-    printf("Found %d platforms!\n", num_platforms);
-		freeResources(&ocl_info, NULL);
-    return 1;
-  }*/
-
 	// get the device ID
+#ifdef FPGA
+	status = clGetDeviceIDs(*(ocl_info.platform_id), 
+		CL_DEVICE_TYPE_ALL, 1, &ocl_info.device_id, &num_devices);
+#else
 	status = clGetDeviceIDs(ocl_info.platform_id[0], 
 		CL_DEVICE_TYPE_CPU, 1, &ocl_info.device_id, &num_devices);
+#endif
 	if (status != CL_SUCCESS) 
 	{
 		dump_error("Failed clGetDeviceIDs.", status);
 		freeResources(&ocl_info, NULL);
 		return 1;
 	}
-  if (num_devices != 1) 
+  /*if (num_devices != 1) 
 	{
     printf("Found %d devices! Exiting now\n", num_devices);
 		freeResources(&ocl_info, NULL);
     return 1;
-  }
-
-  //print_device_info(device); // from HARP membw example
+  }*/
 
 	// create a context
 	// https://www.khronos.org/registry/OpenCL/sdk/1.0/docs/man/xhtml/clCreateContext.html
@@ -134,15 +139,16 @@ int main(int argc, char* argv[])
 		freeResources(&ocl_info, NULL);
     return 1;
   }
-	printf("Successfully created command queue\n");
 
   cl_int kernel_status;
 
 #ifdef FPGA
+//TODO: Anthony start here
   // create program with binary
-  /*cl_int kernel_status;
   size_t binsize = 0;
-  unsigned char* binary_file = aocl_utils::loadBinaryFile("bin/CHANGE_ME.aocx", &binsize);
+	unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt/e2a_unroll_1/e2a_unroll_1.aocx", &binsize);
+  //unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt/e2a_unroll_16/e2a_unroll_16.aocx", &binsize);
+  //unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt/e2a_unroll_1024/e2a_unroll_1024.aocx", &binsize);
   if(!binary_file) 
 	{
     dump_error("Failed loadBinaryFile.", status);
@@ -158,10 +164,9 @@ int main(int argc, char* argv[])
 		freeResources(&ocl_info, NULL);
     return 1;
   }
-  delete [] binary_file;*/
+  delete [] binary_file;
 
   const char options[] = "";
-
 #else
 	//create program with source
 	char *kernel_source = getKernelSource("./e2a.cl");
@@ -190,7 +195,6 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	printf("\n");
 	strcat(of_name, "000.txt");
 
 	//create host buffer through readCharFile_ocl
@@ -239,6 +243,7 @@ int main(int argc, char* argv[])
 
 	/* remaining stuff for enqueueing kernel */
 	printf("right before clEnqueueTask\n");
+	GetTime(compute_start);
 	// Enqueue the EBCDIC to ASCII conversion!
 	status = clEnqueueTask(ocl_info.cmd_queue, ocl_info.kernel, 0, NULL, NULL);
 	if (status != CL_SUCCESS) {
@@ -246,6 +251,12 @@ int main(int argc, char* argv[])
 		freeResources(&ocl_info, source);
 		return 1;
 	}
+
+	clFinish(ocl_info.cmd_queue);
+	GetTime(compute_end);
+  compute_time = TimeDiff(compute_start, compute_end);
+  printf("\nComputation done in %0.3lf ms.\n", compute_time);
+
 
 #endif
 
