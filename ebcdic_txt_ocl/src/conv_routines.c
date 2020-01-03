@@ -123,23 +123,23 @@ int readCharFile_ocl(FILE* ifp, unsigned long int buf_size, unsigned char** sour
 	size_t* newLen, opencl_info* ocl_info)
 {
 
-	cl_int is_context_valid = clGetContextInfo (	ocl_info->context,
+	/*cl_int is_context_valid = clGetContextInfo (	ocl_info->context,
 	 	CL_CONTEXT_REFERENCE_COUNT,
 	 	128,
 	 	NULL,
 	 	NULL);
 	if (is_context_valid != CL_SUCCESS)
 	{
-		printf("abort\n");
+		printf("context not valid; abort\n");
 		return -1;
-	}
+	}*/
 
 	unsigned char* temp_src = (unsigned char*) malloc(sizeof(unsigned char) * (buf_size + 1)); 
 	printf("reg malloc ok\n");
 
 #ifdef FPGA
 	*source = (unsigned char*) clSVMAllocAltera(
-		ocl_info->context, CL_MEM_READ_WRITE, sizeof(unsigned char) * (buf_size + 1), 64 
+		ocl_info->context, CL_MEM_READ_WRITE, sizeof(unsigned char) * (buf_size + 1), 1024 
 	);
 #else
 	*source = (unsigned char*) clSVMAlloc(
