@@ -245,7 +245,14 @@ int main(int argc, char* argv[])
 	printf("right before clEnqueueTask\n");
 	GetTime(compute_start);
 	// Enqueue the EBCDIC to ASCII conversion!
+#ifdef MWI
+	int global = 1024; //TODO
+	int local = 64; //TODO
+	status = clEnqueueNDRangeKernel(ocl_info.cmd_queue, ocl_info.kernel, 1, NULL,
+		&global, &local, 0, NULL, NULL);
+#else
 	status = clEnqueueTask(ocl_info.cmd_queue, ocl_info.kernel, 0, NULL, NULL);
+#endif
 	if (status != CL_SUCCESS) {
 		dump_error("Failed to launch kernel.", status);
 		freeResources(&ocl_info, source);
