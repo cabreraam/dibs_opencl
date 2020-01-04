@@ -10,6 +10,18 @@
 	#define UNROLL 1 
 #endif
 
+#ifndef WGSIZE
+	#define WGSIZE 64
+#endif
+
+#ifndef NUMCOMPUNITS
+	#define NUMCOMPUNITS 1
+#endif
+
+#ifndef NUMSIMD
+	#define NUMSIMD 1
+#endif
+
 /*__constant unsigned char e2a_lut[256] = {
           0,  1,  2,  3,156,  9,134,127,151,141,142, 11, 12, 13, 14, 15,//0-15
          16, 17, 18, 19,157,133,  8,135, 24, 25,146,143, 28, 29, 30, 31,//16-31
