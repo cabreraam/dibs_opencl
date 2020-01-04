@@ -56,14 +56,10 @@ k_EBCDIC_to_ASCII(	__global unsigned char* restrict source,
 	};
 	unsigned int idx;
 	#pragma unroll UNROLL  
-	//#pragma unroll 2 
-	for (idx = 0; idx < num_elts/2; idx += 2)
+	for (idx = 0; idx < num_elts; ++idx)
 	{
 		unsigned char orig_char0 = source[idx];
-		unsigned char orig_char1 = source[idx+1];
 		source[idx] = e2a_lut[orig_char0];
-		source[idx+1] = e2a_lut[orig_char1];
 	}
-
 }	 
 
