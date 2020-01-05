@@ -11,11 +11,11 @@
 #endif
 
 #ifndef WGSIZE
-	#define WGSIZE 64
+	#define WGSIZE 64 
 #endif
 
 #ifndef NUMCOMPUNITS
-	#define NUMCOMPUNITS 1
+	#define NUMCOMPUNITS 1 
 #endif
 
 #ifndef NUMSIMD
@@ -41,12 +41,11 @@
          48, 49, 50, 51, 52, 53, 54, 55, 56, 57,250,251,252,253,254,255 //240-255
 };*/
 
-__attribute__((num_compute_units(1)))
-__attribute__((reqd_work_group_size(1,1,1)))
-__attribute__((num_simd_work_items(1))) 
+__attribute__((num_compute_units(NUMCOMPUNITS))) //only works for FPGA
+__attribute__((reqd_work_group_size(WGSIZE,1,1)))
+__attribute__((num_simd_work_items(NUMSIMD)))//only works for fpga
 __kernel void 
-k_EBCDIC_to_ASCII(	__global unsigned char* restrict source,
-										unsigned long num_elts)
+k_EBCDIC_to_ASCII(	__global unsigned char* restrict source)
 {
 
 	unsigned char e2a_lut[256] = {
@@ -67,15 +66,9 @@ k_EBCDIC_to_ASCII(	__global unsigned char* restrict source,
 		92,159, 83, 84, 85, 86, 87, 88, 89, 90,244,245,246,247,248,249,//224-239
 		48, 49, 50, 51, 52, 53, 54, 55, 56, 57,250,251,252,253,254,255 //240-255
 	};
-	unsigned int idx;
 	unsigned int i = get_global_id(0);
-	unsigned int j = get_local_id(0);
-	#pragma unroll UNROLL  
-	for (idx = 0; idx < LOCAL_WORK_SIZE; ++idx)
-	{
-		unsigned char orig_char0 = source[i * LOCAL_WORK_SIZE + j];
-		source[idx] = e2a_lut[orig_char0];
-	}
+	unsigned char orig_char0 = source[i];
+	source[i] = e2a_lut[orig_char0];
 
 }	 
 

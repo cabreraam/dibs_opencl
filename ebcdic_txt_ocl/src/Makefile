@@ -7,6 +7,8 @@ INC = -I./include
 
 LIBS = -lm
 
+BIN = conv_cl
+
 ifdef HARP
 	AOCL_COMPILE_CONFIG=$(shell aocl compile-config)
 	INC += $(AOCL_COMPILE_CONFIG)
@@ -23,10 +25,10 @@ endif
 
 ifdef MWI 
 	CXXFLAGS+=-DMWI=1
+	BIN = conv_cl_mwi
 endif
 
 
-BIN = conv_cl
 
 AOCL_UTILS_DIR = ../../common_harp
 

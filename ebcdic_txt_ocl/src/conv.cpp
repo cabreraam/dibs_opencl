@@ -23,7 +23,7 @@
 
 #ifdef FPGA
 #include "AOCLUtils/opencl.h"
-#endif
+#endif //FPGA
 #include <CL/opencl.h>
 
 void dump_error(const char *str, cl_int status);
@@ -103,12 +103,12 @@ int main(int argc, char* argv[])
 
 	// get the device ID
 #ifdef FPGA
-	status = clGetDeviceIDs(*(ocl_info.platform_id), 
+	status = clGetDeviceIDs(ocl_info.platform_id[0], 
 		CL_DEVICE_TYPE_ALL, 1, &ocl_info.device_id, &num_devices);
 #else
 	status = clGetDeviceIDs(ocl_info.platform_id[0], 
 		CL_DEVICE_TYPE_CPU, 1, &ocl_info.device_id, &num_devices);
-#endif
+#endif //FPGA
 	if (status != CL_SUCCESS) 
 	{
 		dump_error("Failed clGetDeviceIDs.", status);
@@ -169,12 +169,21 @@ int main(int argc, char* argv[])
   const char options[] = "";
 #else
 	//create program with source
-	char *kernel_source = getKernelSource("./e2a.cl");
+#ifdef MWI
+	char *kernel_source = getKernelSource("./kernels/e2a_mwi.cl");
+#else
+	char *kernel_source = getKernelSource("./kernels/e2a.cl");
+#endif //MWI
 	ocl_info.program = clCreateProgramWithSource(ocl_info.context, 1, 
 		(const char **) &kernel_source, NULL, &kernel_status);
 
+#ifdef MWI
+  const char options[] = "-DUNROLL=1";
+#else
   const char options[] = "-DUNROLL=2";
-#endif
+#endif //MWI
+
+#endif //FPGA
 
   // build the program
   status = clBuildProgram(ocl_info.program, 0, NULL, options, NULL, NULL);
@@ -211,24 +220,22 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-#ifdef MWI
-	//TODO
-
-
-#else // SWI
 
 	// set the arguments
 #ifdef FPGA
 	status = clSetKernelArgSVMPointerAltera(ocl_info.kernel, 0, (void*) source);
 #else
 	status = clSetKernelArgSVMPointer(ocl_info.kernel, 0, (void*) source);
-#endif
-	printf("Launching the kernel...\n");
+#endif //FPGA
 	if(status != CL_SUCCESS) 
 	{
 		dump_error("Failed set arg 0.", status);
 		return 1;
 	}
+#ifdef MWI 
+	//If MWI, we don't need second kernel argument, 
+	//just define global/local WI sizes
+#else 
 	cl_ulong my_size = (cl_ulong) newLen;
 	status = clSetKernelArg(ocl_info.kernel, 1, sizeof(cl_ulong), &my_size);
 	if(status != CL_SUCCESS) 
@@ -237,41 +244,56 @@ int main(int argc, char* argv[])
 		freeResources(&ocl_info, source);
 		return 1;
 	}
+#endif //MWI
 
 	printf("Launching the kernel...\n");
-	
-
 	/* remaining stuff for enqueueing kernel */
-	printf("right before clEnqueueTask\n");
+	printf("right before enqueueing kernel\n");
 	GetTime(compute_start);
 	// Enqueue the EBCDIC to ASCII conversion!
 #ifdef MWI
-	int global = 1024; //TODO
-	int local = 64; //TODO
+	size_t total = newLen; 
+	size_t local = 64; //TODO: don't hardcode
+	size_t modulo = total % local;
+	size_t global = total - modulo;
 	status = clEnqueueNDRangeKernel(ocl_info.cmd_queue, ocl_info.kernel, 1, NULL,
 		&global, &local, 0, NULL, NULL);
 #else
 	status = clEnqueueTask(ocl_info.cmd_queue, ocl_info.kernel, 0, NULL, NULL);
-#endif
+#endif //MWI
 	if (status != CL_SUCCESS) {
 		dump_error("Failed to launch kernel.", status);
 		freeResources(&ocl_info, source);
 		return 1;
 	}
 
+#ifdef MWI
+	status = clEnqueueSVMMap(ocl_info.cmd_queue, CL_TRUE, CL_MAP_READ, 
+		(void *)source, newLen, 0, NULL, NULL); 
+	if(status != CL_SUCCESS) 
+	{
+		dump_error("Failed clEnqueueSVMMap", status);
+		freeResources(&ocl_info, source);
+		return 1;
+	}
+	EBCDICtoASCII_extra(source, global, total); 
+	status = clEnqueueSVMUnmap(ocl_info.cmd_queue, (void *)source, 0, NULL, NULL); 
+	if(status != CL_SUCCESS) {
+		dump_error("Failed clEnqueueSVMUnmap", status);
+		freeResources(&ocl_info, source);
+		return 1;
+	}
+#endif //MWI
 	clFinish(ocl_info.cmd_queue);
 	GetTime(compute_end);
   compute_time = TimeDiff(compute_start, compute_end);
   printf("\nComputation done in %0.3lf ms.\n", compute_time);
 
-
-#endif
-
 	//printf("Output filename: %s\n", of_name);
 	/* make the conversions and write to output file */
 
 	status = clEnqueueSVMMap(ocl_info.cmd_queue, CL_TRUE, CL_MAP_READ, 
-		(void *)source,my_size, 0, NULL, NULL); 
+		(void *)source, newLen, 0, NULL, NULL); 
 	if(status != CL_SUCCESS) 
 	{
 		dump_error("Failed clEnqueueSVMMap", status);

@@ -41,3 +41,12 @@ void EBCDICtoASCII_all(unsigned char* source, unsigned int numElts)
   }
 
 }
+
+void EBCDICtoASCII_extra(unsigned char* source, size_t start, size_t end)
+{
+	size_t idx;
+  for (idx = start; idx < end; ++idx)
+  {
+    source[idx] = EBCDICtoASCII(source[idx]);
+  }
+}
