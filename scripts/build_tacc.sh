@@ -15,7 +15,8 @@ do
 	echo "Enqueueing build for ${APP_NAME} kernel with UNROLL=${unroll}"
 
 	mkdir ${APP_KERNEL_DIR}_unroll_${unroll}
-	screen -d -m aoc e2a.cl e2a.cl -DUNROLL=${unroll} -o \
+	#screen -d -m aoc e2a.cl -DUNROLL=${unroll} -o \
+	aoc e2a.cl -DUNROLL=${unroll} -o \
 		e2a_unroll_${unroll}/e2a_unroll_${unroll}.aocx \
 		--board bdw_fpga_v1.0 -v --report -g
 
