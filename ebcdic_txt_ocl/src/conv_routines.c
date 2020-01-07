@@ -19,6 +19,7 @@
 
 void usage(char *prog_name)
 {
+	printf("TODO: this usage does not reflect OpenCL inputs\n\n");
 	printf("USAGE:\n\t %s [-i inputfile] [-o outputfile] [-a] [-n]\n", prog_name);
 	printf("\n");
 	printf("DESCRIPTION:\n\tConvert the input file into either ASCII or EBCDIC,");

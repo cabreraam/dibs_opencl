@@ -47,6 +47,8 @@ int main(int argc, char* argv[])
 	cl_int status;	
 	cl_uint num_platforms;
 	cl_uint num_devices;
+	char kernel_source[256];
+	size_t local_wi_size; //local workitem size
 
 	/* timing stuff */
 	//TimeStamp input_start, input_end;
@@ -56,7 +58,7 @@ int main(int argc, char* argv[])
 	double compute_time;
 
 	/* Usage */
-	if (argc <= 4 || argc >= 9)
+	if (argc <= 4 || argc >= 10)
 	{
 			printf("Incorrect number of arguments.\n");
 		  usage(argv[0]);
@@ -64,21 +66,30 @@ int main(int argc, char* argv[])
 	}
 	else
 	{
-		while ((ch = getopt(argc, argv, "i:o:an:")) != -1)
+		while ((ch = getopt(argc, argv, "i:o:s:w:")) != -1)
 		{
 			switch (ch)
 			{
-				case 'i': // open input file
+				case 'i': // input file name
 					ifp = fopen(optarg, "r");
 					if (ifp == NULL)
 					{
-					    perror("Error opening input file");
+						perror("Error opening input file");
 						return -1;
 					}
 					break;
 
-				case 'o':
+				case 'o': // 'o'utput file name
 					strcat(of_name, optarg);
+					break;
+
+				case 's': // kernel 's'ource file
+					sprintf(kernel_source, "%s", optarg);
+					printf("%s\n",kernel_source);
+					break;
+
+				case 'w': // local 'w'ork item size
+					local_wi_size = atoi(optarg);	
 					break;
 
 				default:
@@ -146,9 +157,23 @@ int main(int argc, char* argv[])
 //TODO: Anthony start here
   // create program with binary
   size_t binsize = 0;
-	unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt/e2a_unroll_1/e2a_unroll_1.aocx", &binsize);
+	//unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt/e2a_unroll_1/e2a_unroll_1.aocx", &binsize);
   //unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt/e2a_unroll_16/e2a_unroll_16.aocx", &binsize);
   //unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt/e2a_unroll_1024/e2a_unroll_1024.aocx", &binsize);
+  /* MWI */
+  //unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt_mwi/e2a_mwi_128_2_1/e2a_mwi_128_2_1.aocx", &binsize);
+  //unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt_mwi/e2a_mwi_128_1_1/e2a_mwi_128_1_1.aocx", &binsize);
+  //unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt_mwi/e2a_mwi_128_1_2/e2a_mwi_128_1_2.aocx", &binsize);
+  //unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt_mwi/e2a_mwi_128_1_4/e2a_mwi_128_1_4.aocx", &binsize);
+  //unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt_mwi/e2a_mwi_128_1_8/e2a_mwi_128_1_8.aocx", &binsize);
+  //unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt_mwi/e2a_mwi_128_1_16/e2a_mwi_128_1_16.aocx", &binsize); //best so far
+  //unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt_mwi/e2a_mwi_128_1_32/e2a_mwi_128_1_32.aocx", &binsize);
+  //unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt_mwi/e2a_mwi_256_1_16/e2a_mwi_256_1_16.aocx", &binsize);
+  //unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt_mwi/e2a_mwi_256_1_16/e2a_mwi_256_1_16.aocx", &binsize);
+  //unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt_mwi/e2a_mwi_512_1_16/e2a_mwi_512_1_16.aocx", &binsize);
+  //unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt_mwi/e2a_mwi_64_1_16/e2a_mwi_64_1_16.aocx", &binsize);
+  //unsigned char* binary_file = aocl_utils::loadBinaryFile("/homes/cabreraam/dibs/ebcdic_txt_mwi/e2a_mwi_512_2_16/e2a_mwi_512_2_16.aocx", &binsize);
+  unsigned char* binary_file = aocl_utils::loadBinaryFile((const char *)kernel_source, &binsize);
   if(!binary_file) 
 	{
     dump_error("Failed loadBinaryFile.", status);
@@ -253,7 +278,7 @@ int main(int argc, char* argv[])
 	// Enqueue the EBCDIC to ASCII conversion!
 #ifdef MWI
 	size_t total = newLen; 
-	size_t local = 64; //TODO: don't hardcode
+	size_t local = local_wi_size; 
 	size_t modulo = total % local;
 	size_t global = total - modulo;
 	status = clEnqueueNDRangeKernel(ocl_info.cmd_queue, ocl_info.kernel, 1, NULL,

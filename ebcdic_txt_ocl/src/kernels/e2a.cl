@@ -30,7 +30,6 @@
 };*/
 
 __attribute__((max_global_work_dim(0)))
-//__attribute__((num_compute_units(2)))
 __kernel void 
 k_EBCDIC_to_ASCII(	__global unsigned char* restrict source,
 										unsigned long num_elts)
