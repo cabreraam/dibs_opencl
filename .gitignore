@@ -1,5 +1,11 @@
-ebcdic_txt/
 **/input/
 **/output/
 **/bin
+**/build.log
+**/build_qsub_aoc*
+**/*.aocx
 
+ebcdic_txt/
+
+idx3_tiff_ocl/TIFF
+idx3_tiff_ocl/device/idx3_to_tiff*
