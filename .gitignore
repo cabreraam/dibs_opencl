@@ -26,3 +26,6 @@ idx3_tiff_ocl/swi_data/
 idx3_tiff_ocl/mwi_data/
 idx3_tiff_ocl/mwi_data_no_bar/
 idx3_tiff_ocl/device_no_barrier_restrict
+idx3_tiff_ocl/idx3_to_tiff_cl
+idx3_tiff_ocl/idx3_to_tiff_cl_mwi
+idx3_tiff_ocl/idx3_to_tiff_cl_mwi_no_bar
