@@ -8,11 +8,14 @@
 
 ebcdic_txt/
 
+ebcdic_txt_ocl/src/*.out
 ebcdic_txt_ocl/src/conv_cl
 ebcdic_txt_ocl/src/conv_cl_mwi
 ebcdic_txt_ocl/src/mwi_data
 ebcdic_txt_ocl/src/swi_data
-ebcdic_txt_ocl/src/*.out
+ebcdic_txt_ocl/src/run_script_temp_cu1.sh
+ebcdic_txt_ocl/src/run_script_temp_cu1_for_fccm.sh
+ebcdic_txt_ocl/src/temp.sh
 
 idx3_tiff_ocl/TIFF
 idx3_tiff_ocl/device/idx3_to_tiff*
