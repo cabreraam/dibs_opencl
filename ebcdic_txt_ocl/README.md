@@ -1,6 +1,8 @@
 # DIBS Application: ebcdic->txt
 
-# Build Instructions:
+## Building 
+
+### Building Host Code Instructions:
 
 Navigate to the src directory. 
 
@@ -18,7 +20,21 @@ make HARP=1
 This will create the binary file `conv_cl`
 
 
-# Execution Instructions:
+### Building FPGA Design Instructions 
+
+TODO: Fill this out.
+Figure out what directory you want the kernel bitstream to live.
+Show what a build command might look like.
+
+```
+Build command
+```
+
+Use the build script. One for MWI (`mwi_path/build_vlab_all.sh`) and 
+SWI (`swi_path/build_vlab_all.sh`).
+
+
+## Execution Instructions:
 
 The name of the application binary is:
 conv
