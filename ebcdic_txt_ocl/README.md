@@ -22,17 +22,18 @@ This will create the binary file `conv_cl`
 
 ### Building FPGA Design Instructions 
 
-TODO: Fill this out.
-Figure out what directory you want the kernel bitstream to live.
-Show what a build command might look like.
+The following build scripts can be used to sweep coarse-grained design knobs
+for the `ebcdic_txt` application. 
 
-```
-Build command
-```
+For MWI: 
+([build_vlab_all_mwi.sh](build_scripts/build_vlab_all_mwi.sh)
 
-Use the build script. One for MWI (`mwi_path/build_vlab_all.sh`) and 
-SWI (`swi_path/build_vlab_all.sh`).
+and SWI: 
+([build_vlab_all_swi.sh](build_scripts/build_vlab_all_swi.sh)
 
+*NOTE:* Before doing this, you will need to update the `KERNEL_DIR_PREFIX`
+variable in each script to reflect where you want the built kernel bitstreams to
+live.
 
 ## Execution Instructions:
 
