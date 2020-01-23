@@ -42,7 +42,7 @@ This work is currently under submission.
 Issues and pull requests are welcome!
 The current maintainers of this project are listed below.
 
-Anthony Cabrera and Roger Chamberlain
-Department of Computer Science and Engineering
-James McKelvey School of Engineering
-{firstinitiallastname, firstname} at wustl dot edu
+Anthony Cabrera and Roger Chamberlain<br />
+Department of Computer Science and Engineering<br />
+James McKelvey School of Engineering<br />
+{firstinitiallastname, firstname} at wustl dot edu<br />
