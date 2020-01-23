@@ -37,9 +37,6 @@ live.
 
 ## Execution Instructions:
 
-The name of the application binary is:
-conv
-
 This code takes the following inputs from the command line:
 ```
 -i 	'i'nput file (in its entirety, e.g., bigsonnets000.txt)
@@ -50,8 +47,12 @@ This code takes the following inputs from the command line:
 			parameter will not affect runtime but still must be specified. 
 ```
 
-To execute the binary, run the command in the form::
+To execute the MWI binary, run the command in the form::
 ```
-./conv [-i inputfile] [-o outputfile] [-s path/to/binary.aocx] [-w IntVal]
+./conv_cl_mwi [-i inputfile] [-o outputfile] [-s path/to/binary.aocx] [-w IntVal]
 ```
 
+To execute the SWI binary, run the command in the form::
+```
+./conv_cl [-i inputfile] [-o outputfile] [-s path/to/binary.aocx] [-w 1]
+```
