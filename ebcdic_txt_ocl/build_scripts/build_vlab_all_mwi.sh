@@ -11,9 +11,9 @@
 
 APP_NAME="e2a"
 MWI_OR_SWI=mwi
-KERNEL_DIR_PREFIX=${APP_NAME}_${MWI_OR_SWI}
+KERNEL_DIR_PREFIX=kernels/${APP_NAME}_${MWI_OR_SWI}
 
-OCL_SRC_FILE=e2a_mwi.cl
+OCL_SRC_FILE=kernels/e2a_mwi.cl
 
 # coarse-grained knobs
 WGSIZE=( 64 128 256 512 ) 

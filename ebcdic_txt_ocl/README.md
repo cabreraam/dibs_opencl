@@ -33,7 +33,11 @@ and SWI:
 
 *NOTE:* Before doing this, you will need to update the `KERNEL_DIR_PREFIX`
 variable in each script to reflect where you want the built kernel bitstreams to
-live.
+live. By default, they will be built in the [kernels](./kernels) directory.
+
+Paths in the scripts are relative to the top level directory (i.e., by 
+default, they need to be issued from the directory where this README.md lives).
+
 
 ## Execution Instructions:
 
