@@ -23,6 +23,10 @@ aoc kernel_file.cl -o desired_bitsream_path/your_bitstream_name.aocx \
 	--board bdw_fpga_v1.0 -v --report -g 
 ```
 
+Since we are using the Intel vLab development cloud, we must enqueue kernel 
+builds to the build server using the command `qsub-aoc` in place of the `aoc` 
+command above.  
+
 ## Running the Applications
 Each application has their own specific running commands. Each application also
 has scripts to run the different versions, e.g., `run_script_mwi.sh`. The
