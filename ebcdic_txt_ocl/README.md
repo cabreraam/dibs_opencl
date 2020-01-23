@@ -4,7 +4,7 @@
 
 ### Building Host Code Instructions:
 
-Navigate to the src directory. 
+Navigate to the [src](./src) directory. 
 
 For building the *MWI* version, run the command:
 ```
@@ -41,6 +41,9 @@ default, they need to be issued from the directory where this README.md lives).
 
 ## Execution Instructions:
 
+To execute any version of the application, navigate to the [src](./src)
+directory.
+
 This code takes the following inputs from the command line:
 ```
 -i 	'i'nput file (in its entirety, e.g., bigsonnets000.txt)
@@ -60,3 +63,9 @@ To execute the SWI binary, run the command in the form::
 ```
 ./conv_cl [-i inputfile] [-o outputfile] [-s path/to/binary.aocx] [-w 1]
 ```
+
+There are two scripts provided for running the MWI and SWI 
+versions--[src/run_script_mwi.sh](./src/run_script_mwi.sh) and  
+[src/run_script_swi.sh](./src/run_script_mwi.sh), respectively--multiple
+times. The number of times the application is run is set by the script variable
+`NUM_RUNS`. The default value is 100 times. 
