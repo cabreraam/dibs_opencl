@@ -26,10 +26,10 @@ The following build scripts can be used to sweep coarse-grained design knobs
 for the `ebcdic_txt` application. 
 
 For MWI: 
-([build_vlab_all_mwi.sh](build_scripts/build_vlab_all_mwi.sh)
+([build_vlab_all_mwi.sh](build_scripts/build_vlab_all_mwi.sh))
 
 and SWI: 
-([build_vlab_all_swi.sh](build_scripts/build_vlab_all_swi.sh)
+([build_vlab_all_swi.sh](build_scripts/build_vlab_all_swi.sh))
 
 *NOTE:* Before doing this, you will need to update the `KERNEL_DIR_PREFIX`
 variable in each script to reflect where you want the built kernel bitstreams to
