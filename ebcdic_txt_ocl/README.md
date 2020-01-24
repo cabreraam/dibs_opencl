@@ -8,14 +8,14 @@ Navigate to the [src](./src) directory.
 
 For building the *MWI* version, run the command:
 ```
-make HARP=1 MWI=1
+make FPGA=1 HARP=1 MWI=1
 ```
 This will create the binary file `conv_cl_mwi`
 
 
 For building the *SWI* version, run the command:
 ```
-make HARP=1 
+make FPGA=1 HARP=1 
 ```
 This will create the binary file `conv_cl`
 
