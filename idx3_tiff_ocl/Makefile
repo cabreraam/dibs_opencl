@@ -1,54 +1,44 @@
-#General Makefile for OpenCL CPU / FPGA
 
-ifeq ($(VERBOSE),1)
-ECHO := 
+CXX = g++
+
+CXXFLAGS=-O2 
+
+INC = -I./host/inc
+
+#LIBS = -lm
+LIBS =  
+
+BIN = idx3_to_tiff_cl
+
+ifdef HARP
+	AOCL_COMPILE_CONFIG=$(shell aocl compile-config)
+	INC += $(AOCL_COMPILE_CONFIG)
+	AOCL_LINK_CONFIG=$(shell aocl link-config)
+	LIBS += $(AOCL_LINK_CONFIG)
+	#LIBS+= -lOpenCL
 else
-ECHO := @
+	LIBS += -lOpenCL
 endif
 
-TARGET := idx3_to_tiff
-
-# Directories.
-HOST_DIR := host
-TARGET_DIR := bin
-INC_DIRS := host/inc ../common/inc ../extlibs/inc 
-
-# All include files.
-INC_FILES := $(foreach D,$(INC_DIRS),$(wildcard $D/*.h))
-
-# Source files.
-SRCS := $(wildcard host/src/*.cpp)
-
-# Libraries.
-LIBS := OpenCL m 
-
-# Compiler.
-CXX := g++
-
-# Compilation flags
-ifeq ($(DEBUG),1)
-CXXFLAGS += -g 
-else
-CXXFLAGS += -O2 
+ifdef FPGA
+	CXXFLAGS+=-DFPGA=1
 endif
-CXXFLAGS += -Wall -I/usr/local/include -L/usr/local/lib
-#CXXFLAGS += -DGPU
-CXXFLAGS += -DCPU -fopenmp
 
-# Make it all!
-all : $(TARGET_DIR)/$(TARGET)
+ifdef MWI 
+	CXXFLAGS+=-DMWI=1
+	BIN = idx3_to_tiff_cl_mwi
+endif
 
-# Host executable target.
-$(TARGET_DIR)/$(TARGET) : Makefile $(SRCS) $(INC_FILES)
-	@[ -d $(TARGET_DIR) ] || mkdir $(TARGET_DIR)
-	$(ECHO)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -fPIC $(foreach D,$(INC_DIRS),-I$D) \
-			$(SRCS) \
-			$(foreach D,$(LIB_DIRS),-L$D) \
-			$(foreach L,$(LIBS),-l$L) \
-			-o $(TARGET_DIR)/$(TARGET) 
 
-# Standard make targets
-clean :
-	$(ECHO)rm -f $(TARGET_DIR)/$(TARGET)
 
-.PHONY : all clean
+AOCL_UTILS_DIR = ../common_harp
+
+#SRC = conv.cpp a2e.c e2a.c conv_routines.c 
+SRC := $(wildcard host/src/*.cpp)
+
+
+$(BIN): $(SRC) ../common_harp/src/AOCLUtils/opencl.cpp
+	$(CXX) $^ $(CXXFLAGS) $(INC) -I$(AOCL_UTILS_DIR)/inc/ -o $@ $(LIBS) -Wall
+
+clean:
+	rm -f $(BIN) *.o
