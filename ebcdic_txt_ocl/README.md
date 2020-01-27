@@ -68,4 +68,5 @@ There are two scripts provided for running the MWI and SWI
 versions--[run_script_mwi.sh](./src/run_script_mwi.sh) and  
 [run_script_swi.sh](./src/run_script_mwi.sh), respectively--multiple
 times. The number of times the application is run is set by the script variable
-`NUM_RUNS`. The default value is 100 times. 
+`NUM_RUNS`. The default value is 100 times. The `stdout` outputs are directed
+to a data directory (`DATA_DIR`) defined in the run scripts. 
