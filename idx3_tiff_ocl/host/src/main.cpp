@@ -1,9 +1,11 @@
 #include "IDX3_to_TIFF_OCL.h"
+#include "timer.h"
 
 #if defined(FPGA)
 size_t local = 1;
 size_t global = 1;
-const char* source_path = "bin/Idx3toTiff.aocx";
+//const char* source_path = "bin/Idx3toTiff.aocx";
+const char* source_path = "/homes/cabreraam/dibs_opencl/idx3_tiff_ocl/device/with_ivdep.aocx";
 #elif defined(CPU)
 size_t local = 1; //REPLACE
 size_t global = 1;
@@ -50,6 +52,10 @@ void freeResources();
 int main(int argc, char *argv[]) {
 	unsigned char *imageDataBuffer;
 	unsigned char *labelDataBuffer;
+
+	//timing stuff
+	TimeStamp compute_start, compute_end;
+	double compute_time;
 
 	// load the files into buffers and store the length
 	size_t imageFileLength = idx_load_to_buffer(FILEPATH_IMG, &imageDataBuffer);
@@ -147,7 +153,8 @@ int main(int argc, char *argv[]) {
                                                           (sizeof(unsigned char) * numImages * fileLength),
                                                           0);
   //Build from binary
-    status = buildFromBinary(&context, &device, &program, source_path);
+    //status = buildFromBinary(&context, &device, &program, source_path);
+    status = buildFromBinary(&context, &device, &program, argv[1]);
 
   #elif defined CPU
 
@@ -277,12 +284,24 @@ int main(int argc, char *argv[]) {
   // END SETUP - START OCL KERNEL
   //////////////////////////////////////////////////////////////////
 
-  #if defined FPGA
-
+#if defined FPGA
+		GetTime(compute_start);
+#ifdef MWI
+		local = atoi(argv[2]);
+    global = (size_t)numImages * local;
+		printf("global = %zu, local = %zu\n", global, local);
+    status = clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &global, &local,
+  		                                0, NULL, &event);
+#else
     status = clEnqueueTask(queue, kernel, 0, NULL, NULL);
+#endif
     usrCheckError(status, "Enqueuing kernel");
     status = clFinish(queue);
+		GetTime(compute_end);
     usrCheckError(status, "Waiting for finish from device");
+  	compute_time = TimeDiff(compute_start, compute_end);
+  	printf("\nComputation done in %0.3lf ms.\n", compute_time);
+
 
   #elif defined CPU
 
@@ -309,7 +328,7 @@ int main(int argc, char *argv[]) {
   ////////////////////////////////////////////////////////////////////
   // END KERNEL - READ BACK DATA
   ////////////////////////////////////////////////////////////////////
-  size_t tiffFileOutputBufferSize = sizeof(unsigned char) * numImages * fileLength;
+/*  size_t tiffFileOutputBufferSize = sizeof(unsigned char) * numImages * fileLength;
   //Read buffer SVM cl_mem
   #if defined FPGA
     status = clEnqueueSVMMap(queue, CL_TRUE, CL_MAP_READ, (void *)svm_tiffFileOutputBuffer, tiffFileOutputBufferSize, 0, NULL, NULL);
@@ -357,7 +376,7 @@ int main(int argc, char *argv[]) {
   	clGetEventProfilingInfo(event, CL_PROFILING_COMMAND_END, sizeof(time_end), &time_end, NULL);
   	double nanoSeconds = time_end-time_start;
   	printf("OpenCl Execution time is: %0.3f milliseconds \n",nanoSeconds / 1000000.0);
-
+*/
 	// Free allocated memory
 
 	free(imageDataBuffer);
