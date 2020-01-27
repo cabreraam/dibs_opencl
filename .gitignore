@@ -17,9 +17,9 @@ ebcdic_txt_ocl/src/run_script_temp_cu1.sh
 ebcdic_txt_ocl/src/run_script_temp_cu1_for_fccm.sh
 ebcdic_txt_ocl/src/temp.sh
 
-idx3_tiff_ocl/device/idx3_to_tiff*
-idx3_tiff_ocl/device/original*
-idx3_tiff_ocl/device/original*
+idx3_tiff_ocl/device/
+idx3_tiff_ocl/device_no_barrier/
+idx3_tiff_ocl/run_script_mwi_with_bar.sh
 idx3_tiff_ocl/TIFF
 idx3_tiff_ocl/device/with_ivdep*
 idx3_tiff_ocl/device/with_ivdep*
@@ -30,3 +30,4 @@ idx3_tiff_ocl/device_no_barrier_restrict
 idx3_tiff_ocl/idx3_to_tiff_cl
 idx3_tiff_ocl/idx3_to_tiff_cl_mwi
 idx3_tiff_ocl/idx3_to_tiff_cl_mwi_no_bar
+
