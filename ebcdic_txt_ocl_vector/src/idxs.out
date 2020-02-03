@@ -1,0 +1,14 @@
+using e2a_manual_unroll
+buf_size = 9596515
+reg malloc ok
+enqueuesvmmap ok
+enqueuesvmunmap ok
+argument 1 set
+Launching the kernel...
+right before enqueueing kernel
+total = 9596516
+local = 1
+modulo = 0
+global = 1199564
+Failed to launch kernel.
+Error code: -54
