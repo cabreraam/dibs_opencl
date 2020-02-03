@@ -47,7 +47,9 @@ int main(int argc, char* argv[])
 	cl_int status;	
 	cl_uint num_platforms;
 	cl_uint num_devices;
+#ifdef FPGA
 	char kernel_source[256];
+#endif
 	size_t local_wi_size; //local workitem size
 
 	/* timing stuff */
@@ -83,10 +85,12 @@ int main(int argc, char* argv[])
 					strcat(of_name, optarg);
 					break;
 
+#ifdef FPGA
 				case 's': // kernel 's'ource file
 					sprintf(kernel_source, "%s", optarg);
 					printf("%s\n",kernel_source);
 					break;
+#endif
 
 				case 'w': // local 'w'ork item size
 					local_wi_size = atoi(optarg);	
